@@ -2,6 +2,8 @@ module Main
 
 import Vec3
 import Ray
+-- import shapes.Sphere
+import Hittable
 
 aspectRatio : Double
 aspectRatio = 16.0 / 9.0
@@ -11,6 +13,13 @@ width = 400
 
 height : Int
 height = cast (cast width / aspectRatio)
+
+-- World
+world : List (Sphere)
+world = [
+    MkSphere (0, 0, -1) 0.5, 
+    MkSphere (0, -100.5, -1) 100
+]
 
 viewport_height : Double
 viewport_height = 2.0
@@ -33,8 +42,23 @@ vertical = (0.0, viewport_height, 0.0)
 lower_left_corner : Vec3
 lower_left_corner = origin - horizontal/2 - vertical/2 - (0.0, 0.0, focalLength)
 
+rayColor : Ray -> HittableList -> Vec3
+rayColor ray world = 
+        let hit' = hit world ray 0.0 99999
+        in 
+            if isHitted hit'
+                then
+                    0.5 * (normal hit' + (1, 1, 1))
+                else
+                    (1.0 - t) * (1.0, 1.0, 1.0) + t * (0.5, 0.7, 1.0)
+                    where 
+                        direction : Vec3
+                        direction = unitVector (dir ray)
+                        t         = 0.5 * (getY direction + 1.0)
+
 pixelColor : Int -> Int -> Vec3
-pixelColor h w = rayColor $ MkRay origin (lower_left_corner + (cast h / (cast width-1)) * horizontal + (cast w / (cast height-1)) * vertical - origin)
+pixelColor h w = 
+    rayColor (MkRay origin (lower_left_corner + (cast h / (cast width-1)) * horizontal + (cast w / (cast height-1)) * vertical - origin)) Main.world
 
 writeColor : Vec3 -> Vec3
 writeColor v = 255.999 * v

@@ -40,6 +40,9 @@ dot (x1, y1, z1) (x2, y2, z2) = x1 * x2 + y1 * y2 + z1 * z2
 length : Vec3 -> Double
 length (x, y, z) = sqrt (x*x + y*y + z*z)
 
+lengthSquared : Vec3 -> Double
+lengthSquared (x, y, z) = x*x + y*y + z*z
+
 unitVector : Vec3 -> Vec3
 unitVector v = v / Vec3.length v
 
